@@ -43,7 +43,7 @@ testdf3 <- rename(testdf3, replace = c("V2" = "activitylabel"))
 # Get first 3 columns from testdf3
 idcols <- testdf3[,1:3]
 
-# Test info is now tidy, repeat procedure for train folder, comments are now in spanish, but they are pretty much the same as the previous
+# Test info is now tidy, repeat procedure for train folder, comments are mostly in spanish from now on, but the meaning is the same as in the previous step
 
 # Actividades numeradas del 1:6
 ytrain <- read.table(file.path(dataPath, "train","y_train.txt"))
@@ -83,13 +83,6 @@ idcols2 <- traindf3[,1:3]
 #Create finaldf by joining testdf4 and traindf4
 finaldf <- rbind(traindf3, testdf3 )
 
-#labeling the data set with descriptive variable names
-names(finaldf3)<-gsub("^t", "time", names(finaldf3))
-names(finaldf3)<-gsub("^f", "frequency", names(finaldf3))
-names(finaldf3)<-gsub("Acc", "Accelerometer", names(finaldf3))
-names(finaldf3)<-gsub("Gyro", "Gyroscope", names(finaldf3))
-names(finaldf3)<-gsub("Mag", "Magnitude", names(finaldf3))
-names(finaldf3)<-gsub("BodyBody", "Body", names(finaldf3))
 
 #Extracting only the measurements on the mean and standard deviation for each measurement
 
@@ -105,6 +98,13 @@ str(finaldf2)
 # Creates a second,independent tidy data set and ouput it
 finaldf3<-aggregate(. ~Subjects + activitylabel, finaldf2, mean)
 finaldf3<-finaldf3[order(finaldf3$Subjects,finaldf3$activitylabel),]
+#labeling the data set with descriptive variable names
+names(finaldf3)<-gsub("^t", "time", names(finaldf3))
+names(finaldf3)<-gsub("^f", "frequency", names(finaldf3))
+names(finaldf3)<-gsub("Acc", "Accelerometer", names(finaldf3))
+names(finaldf3)<-gsub("Gyro", "Gyroscope", names(finaldf3))
+names(finaldf3)<-gsub("Mag", "Magnitude", names(finaldf3))
+names(finaldf3)<-gsub("BodyBody", "Body", names(finaldf3))
 write.table(finaldf3, file = "tidydf.txt",row.name=FALSE)
 
 knit2html("run_analysis.R")
