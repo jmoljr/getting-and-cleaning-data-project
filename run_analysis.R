@@ -1,17 +1,29 @@
+zipUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+zipFile <- "UCI HAR Dataset.zip"
+
+if (!file.exists(zipFile)) {
+  download.file(zipUrl, zipFile, mode = "wb")
+}
+
+# unzip zip file containing data if data directory doesn't already exist
+dataPath <- "UCI HAR Dataset"
+if (!file.exists(dataPath)) {
+  unzip(zipFile)
+}
 # Numbered activities from 1 to 6
-ytest <- read.table("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//test//y_test.txt")
+ytest <- read.table(file.path(dataPath, "test", "y_test.txt"))
 # 561 variable names
-xtest <- read.table("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//test//X_test.txt")
+xtest <- read.table(file.path(dataPath, "test","X_test.txt"))
 # Table with test subject
-subtest <- read.table("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//test//subject_test.txt")
+subtest <- read.table(file.path(dataPath, "test","subject_test.txt"))
 # 561 variables info
-features <- read.table("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//features.txt")
+features <- read.table(file.path(dataPath, "features.txt"), as.is = TRUE)
 #  list to modify colnames from features
 listf <- as.list(features[,2])
 # Change column names of features
 colnames(xtest) <- c(listf)
 # Read activity labels
-activitylabels <- read.table("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//activity_labels.txt")
+activitylabels <- read.table(file.path(dataPath, "activity_labels.txt"))
 # Get names from activity labels
 aclabels <- as.list(activitylabels[,2])
 # "Merge" of subjects ID with xtest 
@@ -23,131 +35,76 @@ testdf2 <- cbind.data.frame(labeledytest, testdf)
 # Rearrangement to get subject as the first column
 testdf2 <- testdf2[,c(3,1,2,4:564)]
 
-# table reading from the test inertial signals folder
 
-bacxtestpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//test//Inertial Signals//body_acc_x_test.txt")
-ISbacxtest <- read.table(bacxtestpath)
-bacytestpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//test//Inertial Signals//body_acc_y_test.txt")
-ISbacytest <- read.table(bacytestpath)
-bacztestpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//test//Inertial Signals//body_acc_z_test.txt")
-ISbacztest <- read.table(bacztestpath)
-bgxtestpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//test//Inertial Signals//body_gyro_x_test.txt")
-ISbgxtest <- read.table(bgxtestpath)
-bgytestpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//test//Inertial Signals//body_gyro_y_test.txt")
-ISbgytest <- read.table(bgytestpath)
-bgztestpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//test//Inertial Signals//body_gyro_z_test.txt")
-ISbgztest <- read.table(bgztestpath)
-taxtestpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//test//Inertial Signals//total_acc_x_test.txt")
-IStaxtest <- read.table(taxtestpath)
-taytestpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//test//Inertial Signals//total_acc_y_test.txt")
-IStaytest <- read.table(taytestpath)
-taztestpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//test//Inertial Signals//total_acc_z_test.txt")
-IStaztest <- read.table(taztestpath)
 #Name change of columns 1 , 2 and 3
 testdf3 <- rename(testdf2, replace = c("V1" = "Subjects"))
 testdf3 <- rename(testdf3, replace = c("V1.1" = "activityid"))
 testdf3 <- rename(testdf3, replace = c("V2" = "activitylabel"))
 # Get first 3 columns from testdf3
 idcols <- testdf3[,1:3]
-# Add ID columns(idcols) to each of the inertial signals dataframes to avoid
-# having just one giant dataframe
-ISbacxtestfinal <- cbind.data.frame(idcols, ISbacxtest)
-ISbacytestfinal <- cbind.data.frame(idcols, ISbacytest)
-ISbacztestfinal <- cbind.data.frame(idcols, ISbacztest)
-ISbgxtestfinal <- cbind.data.frame(idcols, ISbgxtest)
-ISbgytestfinal <- cbind.data.frame(idcols, ISbgytest)
-ISbgztestfinal <- cbind.data.frame(idcols, ISbgztest)
-IStaxtestfinal <- cbind.data.frame(idcols, IStaxtest)
-IStaytestfinal <- cbind.data.frame(idcols, IStaytest)
-IStaztestfinal <- cbind.data.frame(idcols, IStaztest)
-# cbind everything into testdf4
-testdf4 <- cbind.data.frame(testdf3, ISbacxtest)
-testdf4 <- cbind.data.frame(testdf4, ISbacytest)
-testdf4 <- cbind.data.frame(testdf4, ISbacztest)
-testdf4 <- cbind.data.frame(testdf4, ISbgxtest)
-testdf4 <- cbind.data.frame(testdf4, ISbgytest)
-testdf4 <- cbind.data.frame(testdf4, ISbgztest)
-testdf4 <- cbind.data.frame(testdf4, IStaxtest)
-testdf4 <- cbind.data.frame(testdf4, IStaytest)
-testdf4 <- cbind.data.frame(testdf4, IStaztest)
-### Test info is now tidy, repeat procedure for train folder
+
+# Test info is now tidy, repeat procedure for train folder, comments are now in spanish, but they are pretty much the same as the previous
 
 # Actividades numeradas del 1:6
-ytrain <- read.table("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//train//y_train.txt")
+ytrain <- read.table(file.path(dataPath, "train","y_train.txt"))
 # 561 nombres de variables
-xtrain <- read.table("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//train//X_train.txt")
+xtrain <- read.table(file.path(dataPath, "train","X_train.txt"))
 # Tabla con sujetos test
-subtrain <- read.table("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//train//subject_train.txt")
-## Información de las 561 variables
-features <- read.table("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//features.txt")
-## lista para modificar nombre de columnas de features
+subtrain <- read.table(file.path(dataPath, "train","subject_train.txt"))
+## Informacion de las 561 variables
+features <- read.table(file.path(dataPath, "features.txt"), as.is = TRUE)
+# lista para modificar nombre de columnas de features
 listf <- as.list(features[,2])
 # Cambio de nombres a features 
 colnames(xtrain) <- c(listf)
 # Leer activity labels
-activitylabels <- read.table("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//activity_labels.txt")
+activitylabels <- read.table(file.path(dataPath, "activity_labels.txt"))
 # Obtener nombres de activity labels
 aclabels <- as.list(activitylabels[,2])
 # "Merge" de subjects ID con X rain 
 traindf <- cbind.data.frame(subtrain, xtrain)
-# Unión de nombres de actividades de ytest con activity labels
-#para no tener números
+# Union de nombres de actividades de ytest con activity labels
+#para no tener numeros
 labeledytrain<- join(ytrain, activitylabels)
-# unión de df de actividades con la de sujetos
+# union de df de actividades con la de sujetos
 traindf2 <- cbind.data.frame(labeledytrain, traindf)
 # reordenamiento para que los sujetos sean la primera columna
 traindf2 <- traindf2[,c(3,1,2,4:564)]
 
-# lectura de archivos de carpeta inertial signals de test, TODAS LLEVAN "IS" al inicio
 
-bacxtrainpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//train//Inertial Signals//body_acc_x_train.txt")
-ISbacxtrain <- read.table(bacxtrainpath)
-bacytrainpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//train//Inertial Signals//body_acc_y_train.txt")
-ISbacytrain <- read.table(bacytrainpath)
-bacztrainpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//train//Inertial Signals//body_acc_z_train.txt")
-ISbacztrain <- read.table(bacztrainpath)
-bgxtrainpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//train//Inertial Signals//body_gyro_x_train.txt")
-ISbgxtrain <- read.table(bgxtrainpath)
-bgytrainpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//train//Inertial Signals//body_gyro_y_train.txt")
-ISbgytrain <- read.table(bgytrainpath)
-bgztrainpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//train//Inertial Signals//body_gyro_z_train.txt")
-ISbgztrain <- read.table(bgztrainpath)
-taxtrainpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//train//Inertial Signals//total_acc_x_train.txt")
-IStaxtrain <- read.table(taxtrainpath)
-taytrainpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//train//Inertial Signals//total_acc_y_train.txt")
-IStaytrain <- read.table(taytrainpath)
-taztrainpath <- ("C://Users//jmol-//Documents//Proyectos R//UCI HAR Dataset//train//Inertial Signals//total_acc_z_train.txt")
-IStaztrain <- read.table(taztrainpath)
 #Cambiar nombre de la columnas 1 , 2 y 3
 traindf3 <- rename(traindf2, replace = c("V1" = "Subjects"))
 traindf3 <- rename(traindf3, replace = c("V1.1" = "activityid"))
 traindf3 <- rename(traindf3, replace = c("V2" = "activitylabel"))
 # Get first 3 columns from traindf3
 idcols2 <- traindf3[,1:3]
-# Add ID columns(idcols2) to each of the inertial signals dataframes to avoid
-# having just one giant dataframe
-ISbacxtrainfinal <- cbind.data.frame(idcols2, ISbacxtrain)
-ISbacytrainfinal <- cbind.data.frame(idcols2, ISbacytrain)
-ISbacztrainfinal <- cbind.data.frame(idcols2, ISbacztrain)
-ISbgxtrainfinal <- cbind.data.frame(idcols2, ISbgxtrain)
-ISbgytrainfinal <- cbind.data.frame(idcols2, ISbgytrain)
-ISbgztrainfinal <- cbind.data.frame(idcols2, ISbgztrain)
-IStaxtrainfinal <- cbind.data.frame(idcols2, IStaxtrain)
-IStaytrainfinal <- cbind.data.frame(idcols2, IStaytrain)
-IStaztrainfinal <- cbind.data.frame(idcols2, IStaztrain)
-#cbind everything into traindf4
-traindf4 <- cbind.data.frame(traindf3, ISbacxtrain)
-traindf4 <- cbind.data.frame(traindf4, ISbacytrain)
-traindf4 <- cbind.data.frame(traindf4, ISbacztrain)
-traindf4 <- cbind.data.frame(traindf4, ISbgxtrain)
-traindf4 <- cbind.data.frame(traindf4, ISbgytrain)
-traindf4 <- cbind.data.frame(traindf4, ISbgztrain)
-traindf4 <- cbind.data.frame(traindf4, IStaxtrain)
-traindf4 <- cbind.data.frame(traindf4, IStaytrain)
-traindf4 <- cbind.data.frame(traindf4, IStaztrain)
+
 
 #Create finaldf by joining testdf4 and traindf4
-finaldf <- rbind(traindf4, testdf4 )
-#get sd and mean
-apply(finaldf[,4:1716], 2, sd)
-colMeans(finaldf[,4:1716])
+finaldf <- rbind(traindf3, testdf3 )
+
+#labeling the data set with descriptive variable names
+names(finaldf3)<-gsub("^t", "time", names(finaldf3))
+names(finaldf3)<-gsub("^f", "frequency", names(finaldf3))
+names(finaldf3)<-gsub("Acc", "Accelerometer", names(finaldf3))
+names(finaldf3)<-gsub("Gyro", "Gyroscope", names(finaldf3))
+names(finaldf3)<-gsub("Mag", "Magnitude", names(finaldf3))
+names(finaldf3)<-gsub("BodyBody", "Body", names(finaldf3))
+
+#Extracting only the measurements on the mean and standard deviation for each measurement
+
+#Subset Name of Features by measurements on the mean and standard deviation
+#i.e taken Names of Features with â€œmean()â€ or â€œstd()â€
+subfeatures<-features$V2[grep("mean\\(\\)|std\\(\\)", features$V2)]
+#Subset the data frame Data by seleted names of Features
+selectedNames<-c(as.character(subfeatures), "Subjects", "activitylabel" )
+finaldf2<-subset(finaldf,select=selectedNames)
+#Check the structures of the data frame
+str(finaldf2)
+
+# Creates a second,independent tidy data set and ouput it
+finaldf3<-aggregate(. ~Subjects + activitylabel, finaldf2, mean)
+finaldf3<-finaldf3[order(finaldf3$Subjects,finaldf3$activitylabel),]
+write.table(finaldf3, file = "tidydf.txt",row.name=FALSE)
+
+knit2html("run_analysis.R")
